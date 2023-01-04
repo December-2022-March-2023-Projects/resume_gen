@@ -1,5 +1,10 @@
 from django.shortcuts import render
 from .models import Profile
+import pdfkit
+from django.http import HttpResponse 
+from django.template import loader
+import io
+
 # Create your views here.
 
 def approve(request):
@@ -16,7 +21,23 @@ def approve(request):
       skills = request.POST.get("skills","")
 
       # profile model object
-      profile = Profile(name=name, email=email, phone=phone, degree=degree, school=school, university=university, previous_work=previous_work, skills=skills)
+      profile = Profile(name=name, email=email, phone=phone,summary=summary, degree=degree, school=school, university=university, previous_work=previous_work, skills=skills)
       profile.save()
 
   return render(request, 'resume/approve.html')
+
+# user details view
+def resume(request, id):
+  user_profile = Profile.objects.get(pk=id)
+  template = loader.get_template('resume/resume.html')
+  html = template.render({'user_profile':user_profile})
+  options = {
+    'page-size':'Letter',
+    'encoding':'UTF-8',
+  }
+  pdf = pdfkit.from_string(html, False, options)
+  response = HttpResponse(pdf, content_type='applicaition/pdf')
+  # make pdf downloadable
+  response['Content-Disposition'] = 'attachment'
+  filename = "resume.pdf"
+  return response

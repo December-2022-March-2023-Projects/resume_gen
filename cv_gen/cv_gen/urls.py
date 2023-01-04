@@ -20,4 +20,5 @@ from resume import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', views.approve, name="approve"),
+    path('<int:id>/', views.resume, name="resume"),
 ]
