@@ -1,2 +1,3 @@
 # resume_gen
-# resume_gen
+
+- User details model
